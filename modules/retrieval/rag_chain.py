@@ -3,13 +3,21 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
-# use your fixed VectorStore + LLM
+
 try:
-    from vector_store import VectorStore
-    from language_model import get_llm
+    from pinecone_store import VectorStore
+    from nvidia_llm import get_llm
 except ModuleNotFoundError:
-    from modules.vector_store import VectorStore
-    from modules.language_model import get_llm
+    try:
+        from modules.retrieval.pinecone_store import VectorStore
+        from modules.llm.nvidia_llm import get_llm
+    except ModuleNotFoundError:
+        try:
+            from modules.retrieval.vector_store import VectorStore
+            from modules.llm.language_model import get_llm
+        except ModuleNotFoundError:
+            from vector_store import VectorStore
+            from language_model import get_llm
 
 
 def format_docs(docs):
@@ -37,14 +45,8 @@ Answer:"""
 
 
 def get_retrieval_chain(k: int = 4):
-    """
-    Step by step — fill TODOs:
-    1. init VectorStore() -> vector_store
-    2. retriever = vector_store.vector_store.as_retriever(search_kwargs={"k": k})
-    3. llm = get_llm()
-    4. chain = ({"context": retriever | format_docs, "question": RunnablePassthrough()} | PROMPT | llm | StrOutputParser())
-    5. return chain
-    """
+
+
     # 1. vector store
     vs = VectorStore()
     retriever = vs.vector_store.as_retriever(search_kwargs={"k": k})
@@ -60,9 +62,3 @@ def get_retrieval_chain(k: int = 4):
         | StrOutputParser()
     )
     return chain
-
-
-# quick test when run directly
-if __name__ == "__main__":
-    chain = get_retrieval_chain(k=4)
-    print(chain.invoke("What is self-attention in detail?"))

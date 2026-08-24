@@ -6,9 +6,15 @@ from pinecone.exceptions import PineconeApiException, PineconeException
 from langchain_pinecone import PineconeVectorStore
 
 try:
-    from embed import NVIDIAEmbeddings
+    from nvidia_embeddings import NVIDIAEmbeddings
 except ModuleNotFoundError:
-    from modules.embed import NVIDIAEmbeddings
+    try:
+        from modules.embeddings.nvidia_embeddings import NVIDIAEmbeddings
+    except ModuleNotFoundError:
+        try:
+            from modules.embeddings.embed import NVIDIAEmbeddings
+        except ModuleNotFoundError:
+            from embed import NVIDIAEmbeddings
 
 
 class VectorStore:
