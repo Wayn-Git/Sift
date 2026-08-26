@@ -4,7 +4,7 @@ import os
 
 class NVIDIAEmbeddings(Embeddings):
 
-    def __init__(self, api_key: str, model: str = "nvidia/llama-nemotron-embed-1b-v2"):
+    def __init__(self, api_key: str, model: str = "nvidia/nemotron-3-embed-1b"):
         api_key = api_key or os.environ.get("NVIDIA_API_KEY")
         if not api_key:
             raise ValueError("NVIDIA_API_KEY missing")
