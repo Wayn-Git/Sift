@@ -5,12 +5,12 @@ from langchain_core.runnables import RunnablePassthrough
 
 
 try:
-    from pinecone_store import VectorStore
-    from nvidia_llm import get_llm
+    from modules.pinecone.pinecone_store import VectorStore
+    from modules.nvidia.nvidia_llm import get_llm
 except ModuleNotFoundError:
     try:
         from modules.retrieval.pinecone_store import VectorStore
-        from modules.llm.nvidia_llm import get_llm
+        from modules.nvidia.nvidia_llm import get_llm
     except ModuleNotFoundError:
         try:
             from modules.retrieval.vector_store import VectorStore

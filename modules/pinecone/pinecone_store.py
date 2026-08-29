@@ -5,16 +5,7 @@ from pinecone.exceptions import PineconeApiException, PineconeException
 
 from langchain_pinecone import PineconeVectorStore
 
-try:
-    from nvidia_embeddings import NVIDIAEmbeddings
-except ModuleNotFoundError:
-    try:
-        from modules.embeddings.nvidia_embeddings import NVIDIAEmbeddings
-    except ModuleNotFoundError:
-        try:
-            from modules.embeddings.embed import NVIDIAEmbeddings
-        except ModuleNotFoundError:
-            from embed import NVIDIAEmbeddings
+from modules.client.client_handler import NVIDIAEmbeddings, get_nvidia_key, get_pinecone_key
 
 
 class VectorStore:
@@ -28,8 +19,8 @@ class VectorStore:
         INDEX_NAME: str | None = None,
     ):
         # resolve keys  explicit arg > env
-        pinecone_api_key = pinecone_api_key or api_key or os.getenv("PINECONE_API_KEY")
-        nvidia_api_key = nvidia_api_key or os.getenv("NVIDIA_API_KEY")
+        pinecone_api_key = get_pinecone_key(pinecone_api_key)
+        nvidia_api_key = get_nvidia_key(nvidia_api_key)
         index_name = index_name or INDEX_NAME or os.getenv("PINECONE_INDEX_NAME") or "sift"
 
         if not pinecone_api_key:
