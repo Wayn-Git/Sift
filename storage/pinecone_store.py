@@ -5,7 +5,8 @@ from pinecone.exceptions import PineconeApiException, PineconeException
 
 from langchain_pinecone import PineconeVectorStore
 
-from modules.client.client_handler import NVIDIAEmbeddings, get_nvidia_key, get_pinecone_key
+from embeddings.nvidia_embeddings import NVIDIAEmbeddings
+from client.vector_handler import get_nvidia_key, get_pinecone_key
 
 
 class VectorStore:

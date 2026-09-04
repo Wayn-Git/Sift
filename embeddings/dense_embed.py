@@ -1,6 +1,6 @@
 import os
 
-from nvidia_embeddings import NVIDIAEmbeddings
+from embeddings.nvidia_embeddings import NVIDIAEmbeddings
 
 
 class DenseEmbeddings:
@@ -19,6 +19,9 @@ class DenseEmbeddings:
         self.embeddings = NVIDIAEmbeddings(
             api_key=nvidia_api_key
         )
+
+    def get_dense_model(self):
+        return NVIDIAEmbeddings.get_model()
 
     def generate_embeddings(
         self,

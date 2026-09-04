@@ -15,6 +15,9 @@ class NVIDIAEmbeddings(Embeddings):
             base_url="https://integrate.api.nvidia.com/v1"
         )
 
+    def get_model(self):
+        return self.model
+
     def embed_documents(self, texts):
         response = self.client.embeddings.create(
             input=texts,

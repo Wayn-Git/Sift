@@ -3,16 +3,9 @@ import os
 from pinecone import Pinecone
 from pinecone.exceptions import PineconeApiException, PineconeException
 
-from langchain_openai import ChatOpenAI
 from langchain_pinecone import PineconeVectorStore
 
-try:
-    from modules.embeddings.nvidia_embeddings import NVIDIAEmbeddings
-except ModuleNotFoundError:
-    try:
-        from modules.embeddings.embed import NVIDIAEmbeddings
-    except ModuleNotFoundError:
-        from embed import NVIDIAEmbeddings
+from embeddings.nvidia_embeddings import NVIDIAEmbeddings
 
 
 def get_nvidia_key(nvidia_api_key: str | None = None) -> str:
@@ -23,27 +16,13 @@ def get_nvidia_key(nvidia_api_key: str | None = None) -> str:
     return key
 
 
-def get_pinecone_key(pinecone_api_key: str | None = None) -> str:
+def get_pinecone_info(pinecone_api_key: str, pinecone_index_name: str | None = None) -> str:
     """Resolve Pinecone API key: arg > env var."""
     key = pinecone_api_key or os.getenv("PINECONE_API_KEY")
     if not key:
         raise ValueError("PINECONE_API_KEY missing")
-    return key
-
-
-def get_llm(
-    nvidia_api_key: str | None = None,
-    model: str = "nvidia/nemotron-3-ultra-550b-a55b",
-    temperature: float = 0.2,
-) -> ChatOpenAI:
-    """Return ChatOpenAI pointed at NVIDIA API."""
-    key = get_nvidia_key(nvidia_api_key)
-    return ChatOpenAI(
-        api_key=key,
-        base_url="https://integrate.api.nvidia.com/v1",
-        model=model,
-        temperature=temperature,
-    )
+    index = pinecone_index_name or os.getenv("PINECONE_INDEX_NAME")
+    return key, index
 
 
 def get_vector_store(

@@ -20,6 +20,9 @@ class SparseEmbeddings:
         self.pc = Pinecone(api_key=pc_api_key)
         self.model = model
 
+    def get_sparse_model(self):
+        return self.model 
+
     def generate_embeddings(
         self,
         texts: list[str],
