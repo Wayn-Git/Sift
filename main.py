@@ -1,0 +1,15 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from chain.rag_chain import get_retrieval_chain
+
+
+chain = get_retrieval_chain(k=4)
+
+answer = chain.invoke("What is attention is all you need?")
+print(answer)
+print("---")
+
+# hallucination guard test — not in paper
+print(chain.invoke("Who wrote Hamilton musical?"))
