@@ -1,12 +1,11 @@
-import os
-
 from pinecone import Pinecone
 from pinecone.exceptions import PineconeApiException, PineconeException
 
 from langchain_pinecone import PineconeVectorStore
 
 from embeddings.nvidia_embeddings import NVIDIAEmbeddings
-from client.vector_handler import get_nvidia_key, get_pinecone_key
+from client.vector_handler import get_nvidia_key, get_pinecone_info
+from config import PINECONE_INDEX_NAME
 
 
 class VectorStore:
@@ -20,9 +19,9 @@ class VectorStore:
         INDEX_NAME: str | None = None,
     ):
         # resolve keys  explicit arg > env
-        pinecone_api_key = get_pinecone_key(pinecone_api_key)
+        pinecone_api_key, _ = get_pinecone_info(pinecone_api_key)
         nvidia_api_key = get_nvidia_key(nvidia_api_key)
-        index_name = index_name or INDEX_NAME or os.getenv("PINECONE_INDEX_NAME") or "sift"
+        index_name = index_name or INDEX_NAME or PINECONE_INDEX_NAME
 
         if not pinecone_api_key:
             raise ValueError("PINECONE_API_KEY missing")
