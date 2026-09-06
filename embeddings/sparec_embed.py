@@ -51,3 +51,15 @@ class SparseEmbeddings:
             }
             for item in response
         ]
+
+
+class SparseEncoderAdapter:
+    """Adapter exposing encode_queries/encode_documents for hybrid retriever."""
+    def __init__(self, encoder: SparseEmbeddings):
+        self.encoder = encoder
+
+    def encode_queries(self, text: str) -> dict:
+        return self.encoder.generate_embeddings([text], input_type="query")[0]
+
+    def encode_documents(self, texts: list[str]) -> list[dict]:
+        return self.encoder.generate_embeddings(texts, input_type="passage")
