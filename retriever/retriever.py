@@ -1,9 +1,11 @@
 from langchain_community.retrievers import PineconeHybridSearchRetriever
 
-from embeddings.dense_embed import DenseEmbeddings
+from pinecone import Pinecone
+
+from embeddings.dense_embed import DenseEmbeddings, DenseEncoderAdapter
 from embeddings.sparec_embed import SparseEmbeddings, SparseEncoderAdapter
 from client.vector_handler import get_pinecone_info
-from config import NAMESPACE, TEXT_KEY
+from config import NAMESPACE, TEXT_KEY, PINECONE_INDEX_NAME
 
 
 class HybridRetriever:
@@ -17,17 +19,25 @@ class HybridRetriever:
     ):
         key, index = get_pinecone_info(pinecone_api_key, pinecone_index_name)
 
+        pc = Pinecone(api_key=key)
+
+        index_object = pc.Index(PINECONE_INDEX_NAME)
+
         self.retriever = PineconeHybridSearchRetriever(
             embeddings=DenseEmbeddings(nvidia_api_key=nvidia_api_key).embeddings,
             sparse_encoder=SparseEncoderAdapter(
                 SparseEmbeddings(pc_api_key=key)
             ),
-            index=index,
+            index=index_object,
             namespace=namespace,
             top_k=top_k,
             text_key=TEXT_KEY,
         )
 
+        
     def retrieve(self, query: str, top_k: int = 5):
-        self.retriever.top_k = top_k
-        return self.retriever.invoke(query)
+        # Use .invoke() and pass top_k via the search_kwargs configuration
+        return self.retriever.invoke(
+            query, 
+            config={"search_kwargs": {"top_k": top_k}}
+        )
