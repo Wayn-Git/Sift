@@ -3,7 +3,7 @@ from langchain_community.retrievers import PineconeHybridSearchRetriever
 from pinecone import Pinecone
 
 from embeddings.dense_embed import DenseEmbeddings, DenseEncoderAdapter
-from embeddings.sparec_embed import SparseEmbeddings, SparseEncoderAdapter
+from embeddings.sparse_embed import SparseEmbeddings, SparseEncoderAdapter
 from client.vector_handler import get_pinecone_info
 from config import NAMESPACE, TEXT_KEY
 

@@ -4,7 +4,7 @@
 
 Sift: hybrid RAG demo over "Attention Is All You Need". Dense + sparse retrieval via Pinecone, NVIDIA APIs for embeddings/LLM/rerank. LangChain-based, no web server, no tests, no lint/typecheck config.
 
-Target architecture lives in `structure.md` (query → hybrid retrieve → RRF → rerank → context → LLM). Not fully built yet — see "Current state" below.
+Target architecture lives in `.doc/structure.md` (query → hybrid retrieve → RRF → rerank → context → LLM). Not fully built yet.
 
 ## Commands
 
@@ -27,19 +27,18 @@ No test/lint/typecheck commands exist. After dependency changes: `.venv/bin/pip 
 - Two embedding paths exist and must stay compatible with the Pinecone index: dense = NVIDIA `nemotron-3-embed-1b` (dim 2048), sparse = `pinecone-sparse-english-v0`. Index MUST use `metric="dotproduct"` for hybrid — see `storage/hybrid_store.ipynb`.
 - Hybrid retrieval = `retriever/retriever.py` wrapping LangChain's `PineconeHybridSearchRetriever` (namespace `hrbird`, `text_key="text"`). Reranker (`retriever/reranker.py`, NVIDIA hosted API) exists but is NOT wired into any pipeline yet.
 - `chain/prompts.py` and `chain/rag_chain.py` are intentionally empty (generation stage not built).
-- Index upsert happens only from `storage/hybrid_store.ipynb` (notebook, not a script). Vector IDs are positional (`hrbird-{i}`) — re-running without clearing the namespace duplicates data.
-- Chunking (`injestion/chunking.py`) reads `data/parsed/*.md`. That directory is NOT in the repo — produce it with `injestion/mineru_loader.ipynb` (MinerU PDF → markdown).
+- Index upsert happens only from `storage/hybrid_store.ipynb` (notebook, not a script). Notebook deletes namespace `hrbird` before upsert — re-run safe. Vector IDs are still positional (`hrbird-{i}`).
+- Chunking (`injestion/chunking.py`) reads `data/parsed/*.md`. Produce those files with `injestion/data_processor.ipynb` (MinerU PDF → markdown; source PDF in `data/raw/`).
 
 ## Known landmines
 
 - `retriever/retriever.py`: `pc.Index(pinecone_index_name)` ignores the `index` value from `get_pinecone_info()` — passing only an API key (index arg `None`) crashes. Use the resolved `index` var when touching this file.
 - `DenseEncoderAdapter` in `embeddings/dense_embed.py` is broken (calls `generate_embeddings(..., input_type=...)` but that method takes no `input_type`) and is dead code. Sparse adapter is fine. Don't wire the dense adapter in without fixing it.
-- `storage/hybrid_store.ipynb` imports `from sparse_index import SparseEmbeddings` — stale path, real module is `embeddings.sparec_embed`.
-- Duplicate `get_nvidia_key` helpers exist (`client/llm_handler.py`, historically `vector_handler.py`). Prefer `client.vector_handler.get_nvidia_key`.
+- `storage/pinecone_store.py` writes dense-only vectors (no `sparse_values`) — wrong for the hybrid index. Only upsert via `storage/hybrid_store.ipynb`.
 - README describes an old `modules/` layout that no longer exists. Trust the directory tree, not the README.
 
 ## Conventions
 
-- Package dirs are lowercase, some misspelled on purpose (`injestion/`, `sparec_embed.py`) — do not "fix" spellings without renaming all imports.
+- Package dirs are lowercase. `sparec_embed.py` was renamed to `sparse_embed.py` — keep all imports on `embeddings.sparse_embed`.
 - Empty `__init__.py` files make every subdir a package; keep them.
 - Secrets never enter git: `.env` and `.venv` are gitignored. Do not paste key values into code, commits, or notebooks.
