@@ -54,7 +54,7 @@ class SparseEmbeddings:
 
 
 class SparseEncoderAdapter:
-    """Adapter exposing encode_queries/encode_documents for hybrid retriever."""
+
     def __init__(self, encoder: SparseEmbeddings):
         self.encoder = encoder
 

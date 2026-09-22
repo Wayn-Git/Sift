@@ -11,7 +11,8 @@ def load_and_chunk(
     chunk_size: int = CHUNK_SIZE,
     chunk_overlap: int = CHUNK_OVERLAP,
 ) -> list:
-    """Load .md files from parsed_dir and split into document chunks."""
+    """We need to load in our md files and then chunk them into docs"""
+    
     pages_path = glob.glob(f"{parsed_dir}/*.md")
 
     docs = []

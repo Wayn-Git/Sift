@@ -5,7 +5,7 @@ from pinecone import Pinecone
 from embeddings.dense_embed import DenseEmbeddings, DenseEncoderAdapter
 from embeddings.sparec_embed import SparseEmbeddings, SparseEncoderAdapter
 from client.vector_handler import get_pinecone_info
-from config import NAMESPACE, TEXT_KEY, PINECONE_INDEX_NAME
+from config import NAMESPACE, TEXT_KEY
 
 
 class HybridRetriever:
@@ -21,7 +21,7 @@ class HybridRetriever:
 
         pc = Pinecone(api_key=key)
 
-        index_object = pc.Index(PINECONE_INDEX_NAME)
+        index_object = pc.Index(pinecone_index_name)
 
         self.retriever = PineconeHybridSearchRetriever(
             embeddings=DenseEmbeddings(nvidia_api_key=nvidia_api_key).embeddings,
